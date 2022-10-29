@@ -1,11 +1,11 @@
 import "reflect-metadata";
 import {createClient, Platform} from "oicq";
-import config from "./config";
-import {MessageDistributor} from "./exoskeleton/distributor";
-import {HelpController} from "./controller/helpController";
-import {BindController} from "./controller/bindController";
-import {CourseController} from "./controller/courseController";
-import {BotContext} from "./exoskeleton/botContext";
+import config from "./config.js";
+import {MessageDistributor} from "./exoskeleton/distributor.js";
+import {HelpController} from "./controller/helpController.js";
+import {BindController} from "./controller/bindController.js";
+import {CourseController} from "./controller/courseController.js";
+import {BotContext} from "./exoskeleton/botContext.js";
 
 const distributor = new MessageDistributor();
 {
@@ -57,3 +57,4 @@ client.on("message", (e) => {
     console.log(e);
   }
 });
+

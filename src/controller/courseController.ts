@@ -1,6 +1,6 @@
-import {TextController} from "../exoskeleton/textController";
-import {authentication, from} from "../exoskeleton/reflect";
-import {BotContext} from "../exoskeleton/botContext";
+import {TextController} from "../exoskeleton/textController.js";
+import {authentication, from} from "../exoskeleton/reflect.js";
+import {BotContext} from "../exoskeleton/botContext.js";
 
 export class CourseController implements TextController {
   match(msg: string): boolean {

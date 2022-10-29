@@ -1,5 +1,5 @@
-import {TextController} from "./textController";
-import {getFrom} from "./reflect";
+import {TextController} from "./textController.js";
+import {getFrom} from "./reflect.js";
 
 export interface BotControllerMethods {
   private: string[],

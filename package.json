@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/main.ts",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "serve": "tsc && node dist/main.js"
@@ -13,6 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "4.5.0",
+    "@types/got": "^9.6.12",
+    "got": "^12.5.2",
     "oicq": "^2.3.1",
     "reflect-metadata": "^0.1.13"
   },

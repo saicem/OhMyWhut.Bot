@@ -1,7 +1,7 @@
-import {from} from "../exoskeleton/reflect";
-import {TextController} from "../exoskeleton/textController";
-import {setUserAccount, setUserRoom} from "../database/user";
-import {BotContext} from "../exoskeleton/botContext";
+import {from} from "../exoskeleton/reflect.js";
+import {TextController} from "../exoskeleton/textController.js";
+import {setUserAccount, setUserRoom} from "../database/user.js";
+import {BotContext} from "../exoskeleton/botContext.js";
 
 export class BindController implements TextController {
   match(msg: string): boolean {

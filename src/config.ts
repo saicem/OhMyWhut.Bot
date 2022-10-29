@@ -3,4 +3,5 @@ export default {
   password: "",
   admin: 0,
   filterLength: 80,
+  fastFetcherUrl: "",
 };
