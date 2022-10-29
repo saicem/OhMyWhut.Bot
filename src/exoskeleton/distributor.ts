@@ -1,4 +1,4 @@
-import {ITextController} from "./ITextController";
+import {TextController} from "./textController";
 import {getFrom} from "./reflect";
 
 export interface BotControllerMethods {
@@ -25,10 +25,10 @@ function parseDict(proto: any) {
 }
 
 export class MessageDistributor {
-  controllers: ITextController[] = [];
-  methods = new WeakMap<ITextController, BotControllerMethods>();
+  controllers: TextController[] = [];
+  methods = new WeakMap<TextController, BotControllerMethods>();
 
-  addController<T extends ITextController>(controller: T) {
+  addController<T extends TextController>(controller: T) {
     this.controllers.push(controller);
     this.methods.set(controller, parseDict(Object.getPrototypeOf(controller)));
   }
@@ -41,7 +41,7 @@ export class MessageDistributor {
     }
   }
 
-  getMethods<T extends ITextController>(controller: T) {
+  getMethods<T extends TextController>(controller: T) {
     return this.methods.get(controller);
   }
 }

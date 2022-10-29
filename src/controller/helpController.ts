@@ -1,8 +1,8 @@
 import {from} from "../exoskeleton/reflect";
-import {ITextController} from "../exoskeleton/ITextController";
+import {TextController} from "../exoskeleton/textController";
 import {BotContext} from "../exoskeleton/botContext";
 
-export class HelpController implements ITextController {
+export class HelpController implements TextController {
   match(msg: string): boolean {
     return msg.length < 10 && (msg.startsWith("help") || msg.startsWith("帮助"));
   }

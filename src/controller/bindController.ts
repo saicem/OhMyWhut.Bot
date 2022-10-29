@@ -1,9 +1,9 @@
 import {from} from "../exoskeleton/reflect";
-import {ITextController} from "../exoskeleton/ITextController";
+import {TextController} from "../exoskeleton/textController";
 import {setUserAccount, setUserRoom} from "../database/user";
 import {BotContext} from "../exoskeleton/botContext";
 
-export class BindController implements ITextController {
+export class BindController implements TextController {
   match(msg: string): boolean {
     return msg.startsWith("绑定");
   }
