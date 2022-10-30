@@ -1,6 +1,7 @@
 import {TextController} from "../exoskeleton/textController.js";
 import {authentication, from} from "../exoskeleton/reflect.js";
 import {BotContext} from "../exoskeleton/botContext.js";
+import {UnionMessageEvent} from "../exoskeleton/middleware.js";
 
 export class CourseController implements TextController {
   match(msg: string): boolean {
@@ -10,7 +11,7 @@ export class CourseController implements TextController {
 
   @authentication("basic")
   @from("any")
-  handleAny(ctx: BotContext) {
+  async handleAny(ctx: BotContext, e: UnionMessageEvent): Promise<void> {
 
   }
 }

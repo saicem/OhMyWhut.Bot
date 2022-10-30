@@ -5,11 +5,14 @@ import {MessageDistributor} from "./exoskeleton/distributor.js";
 import {HelpController} from "./controller/helpController.js";
 import {BindController} from "./controller/bindController.js";
 import {CourseController} from "./controller/courseController.js";
-import {BotContext} from "./exoskeleton/botContext.js";
+import {AuthenticationMiddleware} from "./exoskeleton/middleware.js";
+import {BookController} from "./controller/bookController.js";
 
 const distributor = new MessageDistributor();
 {
+  distributor.addMiddleware(new AuthenticationMiddleware());
   distributor.addController(new HelpController());
+  distributor.addController(new BookController());
   distributor.addController(new BindController());
   distributor.addController(new CourseController());
 }
@@ -33,23 +36,9 @@ client.on("system.login.qrcode", function () {
 }).login();
 
 
-client.on("message", (e) => {
-  // 过滤长消息
-  if (e.raw_message.length > config.filterLength) return;
-
-  // 找到消息匹配的控制器以及方法
-  const method = distributor.getMethod(e.raw_message, e.message_type);
-  if (!method) return;
-  // 依次由中间件处理
-
-  const ctx: BotContext = {
-    e: e,
-    info: new Map(),
-  };
-
-  // 遍历所有可用方法
+client.on("message", async (e) => {
   try {
-    method(ctx);
+    await distributor.handleTextMessage(e);
   } catch (e) {
     // todo 记录到错误日志
     console.log(e);

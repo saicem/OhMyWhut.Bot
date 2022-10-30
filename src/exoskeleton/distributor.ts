@@ -1,6 +1,9 @@
 import {TextController} from "./textController.js";
 import {getFrom} from "./reflect.js";
 import {BotContext} from "./botContext.js";
+import {BotMiddleware} from "./middleware.js";
+import config from "../config.js";
+import {DiscussMessageEvent, GroupMessageEvent, PrivateMessageEvent} from "oicq";
 
 export interface BotControllerMethods {
   private: string | undefined,
@@ -8,15 +11,14 @@ export interface BotControllerMethods {
   group: string | undefined,
 }
 
-export type BotMethodTagger = (target: any, propertyKey: string) => string;
+export type BotMsgHandler = (ctx: BotContext, e: DiscussMessageEvent | GroupMessageEvent | PrivateMessageEvent) => Promise<void>;
 
-export type BotMsgHandler = (ctx: BotContext) => any;
-
+// TODO too heavy，考虑重构
 export class MessageDistributor {
   controllers: TextController[] = [];
   methodsMap = new WeakMap<TextController, BotControllerMethods>();
-  methodTags = new Set<string>();
-  taggers: BotMethodTagger[] = [];
+  methodTags = new Map<string, string>();
+  middlewares: BotMiddleware[] = [];
 
   parseController(proto: any) {
     const methods: BotControllerMethods = {
@@ -24,6 +26,8 @@ export class MessageDistributor {
       discuss: undefined,
       group: undefined,
     };
+
+    const tags = this.middlewares.map(x => x.tag);
 
     for (const key of Object.getOwnPropertyNames(proto)) {
       if (typeof proto[key] != "function") continue;
@@ -38,30 +42,23 @@ export class MessageDistributor {
         methods[fromType] = key;
       }
 
-      for (const tagger of this.taggers) {
-        const tag = tagger(proto, key);
-        if (tag) {
-          this.addMethodTag(key, proto.name, tag);
+      const controllerName = proto.constructor.name;
+      for (const tag of tags) {
+        const data = Reflect.getMetadata(`bot:${tag}`, proto, key);
+        if (data) {
+          this.setMethodTagData(controllerName, key, tag, data);
         }
       }
     }
     return methods;
   }
 
-  /**
-   * 添加标记器，用于识别方法的 metadata 并记录
-   * @param tagger 标记器
-   */
-  addTaggers(tagger: BotMethodTagger) {
-    this.taggers.push(tagger);
+  setMethodTagData(controller: string, method: string, tag: string, data: string) {
+    this.methodTags.set(`${controller}:${method}:${tag}`, data);
   }
 
-  addMethodTag(method: string, controller: string, tag: string) {
-    this.methodTags.add(`${method}:${controller}:${tag}`);
-  }
-
-  hasMethodTag(method: string, controller: string, tag: string) {
-    return this.methodTags.has(`${method}:${controller}:${tag}`);
+  getMethodTagData(controller: string, method: string, tag: string) {
+    return this.methodTags.get(`${controller}:${method}:${tag}`);
   }
 
   addController<T extends TextController>(controller: T) {
@@ -69,15 +66,37 @@ export class MessageDistributor {
     this.methodsMap.set(controller, this.parseController(Object.getPrototypeOf(controller)));
   }
 
-  getMethod(msg: string, type: "private" | "discuss" | "group"): BotMsgHandler | undefined {
-    const controller = this.controllers.find(controller => controller.match(msg));
-    if (!controller) {
-      return undefined;
+  addMiddleware(middleware: BotMiddleware) {
+    this.middlewares.push(middleware);
+  }
+
+  async handleTextMessage(e: PrivateMessageEvent | GroupMessageEvent | DiscussMessageEvent): Promise<void> {
+    // 过滤长消息
+    if (e.raw_message.length > config.filterLength) return;
+
+    const controller = this.controllers.find(controller => controller.match(e.raw_message));
+    if (!controller) return;
+
+    const methodName = this.methodsMap.get(controller)![e.message_type];
+    if (!methodName) return;
+
+    // todo 上方添加过滤器
+    const ctx: BotContext = {info: new Map<string, string>(), retMsg: [], stop: false};
+
+    const controllerName = Object.getPrototypeOf(controller).constructor.name;
+    for (const middleware of this.middlewares) {
+      const data = this.getMethodTagData(controllerName, methodName, middleware.tag);
+      await middleware.handle(ctx, e, data);
+      if (ctx.stop) break;
     }
-    const methodName = this.methodsMap.get(controller)![type];
-    if (!methodName) {
-      return undefined;
+
+    if (!ctx.stop) {
+      // todo 如何补全类型
+      await ((controller as any)[methodName] as BotMsgHandler)(ctx, e);
     }
-    return (controller as any)[methodName];
+
+    if (ctx.retMsg.length) {
+      await e.reply(ctx.retMsg.join("\n"), true);
+    }
   }
 }

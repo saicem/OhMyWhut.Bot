@@ -2,7 +2,7 @@ import {PrismaClient} from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function setUserAccount(qq: number, username: string, password: string) {
+export async function setUserAccount(qq: string, username: string, password: string) {
   await prisma.user.upsert({
     create: {
       qq: qq,
@@ -19,14 +19,14 @@ export async function setUserAccount(qq: number, username: string, password: str
   });
 }
 
-export async function setUserRoom(qq: number, meter: string) {
+export async function setUserRoom(qq: string, meter: string) {
   await prisma.user.upsert({
     create: {
       qq: qq,
-      meter: meter,
+      meterId: meter,
     },
     update: {
-      meter: meter,
+      meterId: meter,
     },
     where: {
       qq: qq,
@@ -34,7 +34,7 @@ export async function setUserRoom(qq: number, meter: string) {
   });
 }
 
-export async function getUserAccount(qq: number) {
+export async function getUserAccount(qq: string) {
   return await prisma.user.findFirst({
     where: {
       qq: qq,
@@ -42,12 +42,11 @@ export async function getUserAccount(qq: number) {
     select: {
       username: true,
       password: true,
-      meter: true,
     },
   });
 }
 
-export async function getUserMeter(qq: number) {
+export async function getUserMeter(qq: string) {
   return await prisma.user.findFirst({
     where: {
       qq: qq,
@@ -55,7 +54,7 @@ export async function getUserMeter(qq: number) {
     select: {
       username: true,
       password: true,
-      meter: true,
+      meterId: true,
     },
   });
 }

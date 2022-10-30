@@ -1,6 +1,10 @@
-export function from(type: "private" | "group" | "discuss" | "any"): MethodDecorator {
-  return (target, key, descriptor) => {
-    Reflect.defineMetadata("bot:from", type, target, key);
+import {BotContext} from "./botContext.js";
+import {UnionMessageEvent} from "./middleware.js";
+
+export function from(type: "private" | "group" | "discuss" | "any") {
+  return (target: object, propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: BotContext, e: UnionMessageEvent) => Promise<any>>) => {
+    descriptor.value;
+    Reflect.defineMetadata("bot:from", type, target, propertyKey);
   };
 }
 
