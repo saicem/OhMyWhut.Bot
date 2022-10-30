@@ -5,10 +5,12 @@ const baseUrl = config.fastFetcherUrl;
 
 interface FetchBooksResponse {
   data: {
-    name: string,
-    expire: string,
-    borrow: string,
-  }[];
+    books: {
+      name: string,
+      expire: string,
+      borrow: string
+    }[],
+  };
 }
 
 export async function fetchBooks(username: string, password: string) {
