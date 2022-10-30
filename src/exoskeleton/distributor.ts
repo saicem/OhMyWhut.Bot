@@ -1,6 +1,6 @@
 import {TextController} from "./textController.js";
 import {BotContext} from "./botContext.js";
-import {BotMiddleware} from "./middleware.js";
+import {BotMiddleware, UnionMessageEvent} from "./middleware.js";
 import config from "../config.js";
 import {DiscussMessageEvent, GroupMessageEvent, PrivateMessageEvent} from "oicq";
 import {getFrom} from "./reflections/from.js";
@@ -70,7 +70,7 @@ export class MessageDistributor {
     this.middlewares.push(middleware);
   }
 
-  async handleTextMessage(e: PrivateMessageEvent | GroupMessageEvent | DiscussMessageEvent): Promise<void> {
+  async handleTextMessage(e: UnionMessageEvent): Promise<void> {
     // 过滤长消息
     if (e.raw_message.length > config.filterLength) return;
 
@@ -91,7 +91,6 @@ export class MessageDistributor {
     }
 
     if (!ctx.stop) {
-      // todo 如何补全类型
       await ((controller as any)[methodName] as BotMsgHandler)(ctx, e);
     }
 
