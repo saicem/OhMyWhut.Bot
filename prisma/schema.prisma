@@ -12,7 +12,7 @@ datasource db {
 
 model User {
     id Int @id @default(autoincrement())
-    qq Int @unique
+    qq String @unique
     username String?
     password String?
     meterId String?
