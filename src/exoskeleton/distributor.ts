@@ -1,9 +1,9 @@
 import {TextController} from "./textController.js";
-import {getFrom} from "./reflect.js";
 import {BotContext} from "./botContext.js";
 import {BotMiddleware} from "./middleware.js";
 import config from "../config.js";
 import {DiscussMessageEvent, GroupMessageEvent, PrivateMessageEvent} from "oicq";
+import {getFrom} from "./reflections/from.js";
 
 export interface BotControllerMethods {
   private: string | undefined,

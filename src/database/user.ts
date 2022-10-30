@@ -34,8 +34,13 @@ export async function setUserRoom(qq: string, meter: string) {
   });
 }
 
-export async function getUserAccount(qq: string) {
-  return await prisma.user.findFirst({
+export async function getUserAccount(qq: string): Promise<{ username: string, password: string } | null> {
+  const cachedRes: { username: string, password: string } | undefined | null = botCache.get(qq);
+  if (cachedRes !== undefined) {
+    return cachedRes;
+  }
+
+  let res = await prisma.user.findFirst({
     where: {
       qq: qq,
     },
@@ -44,6 +49,12 @@ export async function getUserAccount(qq: string) {
       password: true,
     },
   });
+
+  if (res != null && (res.username == null || res.password == null)) {
+    res = null;
+  }
+  botCache.set(qq, res);
+  return res as { username: string, password: string } | null;
 }
 
 export async function getUserMeter(qq: string) {

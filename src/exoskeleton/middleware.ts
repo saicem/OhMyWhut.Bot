@@ -1,7 +1,7 @@
 import {BotContext} from "./botContext.js";
-import {authentication, AuthenticationTags} from "./reflect.js";
 import {getUserAccount, getUserMeter} from "../database/user.js";
 import {DiscussMessageEvent, GroupMessageEvent, PrivateMessageEvent} from "oicq";
+import {AuthenticationTags} from "./reflections/authentication.js";
 
 export type UnionMessageEvent = PrivateMessageEvent | GroupMessageEvent | DiscussMessageEvent
 
