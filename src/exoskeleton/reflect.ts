@@ -4,7 +4,7 @@ export function from(type: "private" | "group" | "discuss" | "any"): MethodDecor
   };
 }
 
-export function getFrom(target: any, propertyKey: string): "private" | "group" | "discuss" | "any" {
+export function getFrom(target: any, propertyKey: string): "private" | "group" | "discuss" | "any" | undefined {
   return Reflect.getMetadata("bot:from", target, propertyKey);
 }
 
@@ -14,6 +14,6 @@ export function authentication(policy: "basic"): MethodDecorator {
   };
 }
 
-export function getAuthentication(target: any, propertyKey: string): "basic" {
+export function getAuthentication(target: any, propertyKey: string): "basic" | undefined {
   return Reflect.getMetadata("bot:authentication", target, propertyKey);
 }
