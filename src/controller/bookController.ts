@@ -1,8 +1,9 @@
 import {TextController} from "../exoskeleton/textController.js";
-import {authentication, from} from "../exoskeleton/reflect.js";
 import {BotContext} from "../exoskeleton/botContext.js";
 import {fetchBooks} from "../request/fastFetcher.js";
 import {UnionMessageEvent} from "../exoskeleton/middleware.js";
+import {authentication} from "../exoskeleton/reflections/authentication.js";
+import {from} from "../exoskeleton/reflections/from.js";
 
 export class BookController implements TextController {
   match(msg: string): boolean {
