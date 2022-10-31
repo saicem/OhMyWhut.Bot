@@ -14,6 +14,8 @@ export interface BotControllerMethods {
 
 export type BotMsgHandler = (ctx: BotContext, e: UnionMessageEvent) => Promise<void>;
 
+const appMetadataKey = "bot:app";
+
 export class BotApplication {
   controllers: BotControllerBase[] = [];
   methodsMap = new WeakMap<BotControllerBase, BotControllerMethods>();
@@ -41,10 +43,6 @@ export class BotApplication {
     }
 
     return methods;
-  }
-
-  controller() {
-
   }
 
   addController<T extends BotControllerBase>(controller: T) {
@@ -91,18 +89,14 @@ export class BotApplication {
     }
   }
 
-  private static metadataKey = "bot:app";
-
-  static from(type: "private" | "discuss" | "group" | "any") {
-    return (target: object, propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: BotContext, e: UnionMessageEvent) => Promise<any>>) => {
-      descriptor.value;
-      Reflect.defineMetadata(`${BotApplication.metadataKey}`, type, target, propertyKey);
-    };
-  }
-
   private static getFromMetadata(target: any, propertyKey: string): "private" | "discuss" | "group" | "any" | undefined {
-    return Reflect.getMetadata(`${BotApplication.metadataKey}`, target, propertyKey);
+    return Reflect.getMetadata(`${appMetadataKey}`, target, propertyKey);
   }
 }
 
-export const from = BotApplication.from;
+export function from(type: "private" | "discuss" | "group" | "any") {
+  return (target: object, propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: BotContext, e: UnionMessageEvent) => Promise<any>>) => {
+    descriptor.value;
+    Reflect.defineMetadata(`${appMetadataKey}`, type, target, propertyKey);
+  };
+}
