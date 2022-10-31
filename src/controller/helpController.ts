@@ -24,7 +24,7 @@ export class HelpController implements TextController {
       ctx.retMsg.push(...[
         "发送 '帮助 参数' 获取参数相关的帮助",
         "可用指令:",
-        "1. 绑定 [学号 {xxx} 密码 {xxx}] [宿舍 {xxx}|meter {xxx}]",
+        "1. 绑定 [学号 {xxx} 密码 {xxx}] [宿舍 {xxx:东1-101,智2-202}|meter {xxx}]",
         "2. 课表 [日历|ical|1-20]",
         "3. 图书",
         "4. 电费",

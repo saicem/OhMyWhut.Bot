@@ -3,6 +3,7 @@ import {setUserAccount, setUserRoom} from "../database/user.js";
 import {BotContext} from "../exoskeleton/botContext.js";
 import {UnionMessageEvent} from "../exoskeleton/middleware.js";
 import {from} from "../exoskeleton/reflections/from.js";
+import {getMeterIdFromRoom} from "../database/room.js";
 
 export class BindController implements TextController {
   match(msg: string): boolean {
@@ -27,11 +28,17 @@ export class BindController implements TextController {
         }
       }
     }
+
     if (msg.match(/宿舍|meter/)) {
-      const room = msg.match(/宿舍\s*(\d+?\b)/)?.[1];
-      const meterId = msg.match(/meter\s*(.+?\b)/)?.[1];
+      const room = msg.match(/宿舍\s*(.{1,10}?-\d+)/)?.[1];
+      let meterId = msg.match(/meter\s*(.+?\b)/)?.[1];
       if (room != null) {
-        // todo 从数据库查询电表
+        const queryResult = await getMeterIdFromRoom(room);
+        if (queryResult == null) {
+          ctx.retMsg.push(`未能查询到宿舍: ${room} 的信息`);
+        } else {
+          meterId = queryResult.meterId;
+        }
       }
       if (meterId != null) {
         await setUserRoom(e.sender.user_id.toString(), meterId);

@@ -7,6 +7,8 @@ import {BindController} from "./controller/bindController.js";
 import {CourseController} from "./controller/courseController.js";
 import {AuthenticationMiddleware} from "./exoskeleton/middleware.js";
 import {BookController} from "./controller/bookController.js";
+import {CardMoneyController} from "./controller/cardMoneyController.js";
+import {ElectricController} from "./controller/electricController.js";
 
 const distributor = new MessageDistributor();
 {
@@ -15,6 +17,8 @@ const distributor = new MessageDistributor();
   distributor.addController(new BookController());
   distributor.addController(new BindController());
   distributor.addController(new CourseController());
+  distributor.addController(new CardMoneyController());
+  distributor.addController(new ElectricController());
 }
 
 const client = createClient(config.username, {platform: Platform.aPad});
