@@ -22,13 +22,15 @@ export type Policies = "basic" | "electric"
 export class AuthenticationMiddleware extends BotMiddlewareBase {
   async handle(ctx: BotContext, e: UnionMessageEvent): Promise<void> {
     const metadata: Policies | undefined = this.getMetadata(ctx, AuthenticationMetadataKey);
-    if (!metadata) {
-      return;
-    }
-    if (metadata == "basic") {
-      await this.handleBasic(ctx, e);
-    } else if (metadata == "electric") {
-      await this.handleElectric(ctx, e);
+    switch (metadata) {
+      case "basic":
+        await this.handleBasic(ctx, e);
+        break;
+      case "electric":
+        await this.handleElectric(ctx, e);
+        break;
+      default:
+        break;
     }
     await this.callNext(ctx, e);
   }
