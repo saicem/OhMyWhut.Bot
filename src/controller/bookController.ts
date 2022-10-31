@@ -15,8 +15,8 @@ export class BookController implements BotControllerBase {
     const {username, password} = ctx.info.get("auth") as UserInfo;
     const {books} = await fetchBooks(username, password);
     ctx.retMsg.push(...[
-      `一共借阅了${books.length}本书`,
-      ...books.map(book => `${book.name}: ${book.borrow.replace("-", "/")}~${book.expire.replace("-", "/")}`),
+      `共借阅了 ${books.length} 本书`,
+      ...books.map(book => `${book.name}: ${book.borrow.replaceAll("-", "/")}~${book.expire.replaceAll("-", "/")}`),
     ].join("\n"));
   }
 }
