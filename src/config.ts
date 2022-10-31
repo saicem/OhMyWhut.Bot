@@ -23,4 +23,9 @@ export default {
    * 依赖的 api 链接，查看 https://github.com/saicem/OhMyWhut.FastFetcher
    */
   fastFetcherUrl: "",
-};
+
+  /**
+   * 通过 webapi 发送消息时需要的密钥
+   */
+  msgSecret: "",
+} as const;

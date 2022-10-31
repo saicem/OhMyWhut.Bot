@@ -9,6 +9,7 @@ import {BookController} from "./controller/bookController.js";
 import {CardMoneyController} from "./controller/cardMoneyController.js";
 import {ElectricController} from "./controller/electricController.js";
 import {AuthenticationMiddleware} from "./middlewares/authentication.js";
+import {createKoaApp} from "./webapi.js";
 
 export const app = new BotApplication();
 {
@@ -49,3 +50,5 @@ client.on("message", async (e) => {
   }
 });
 
+const koaApp = createKoaApp(client);
+koaApp.listen(3000);
