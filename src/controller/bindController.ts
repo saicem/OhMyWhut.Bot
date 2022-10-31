@@ -1,9 +1,8 @@
 import {TextController} from "../exoskeleton/textController.js";
-import {setUserAccount, setUserRoom} from "../database/user.js";
 import {BotContext} from "../exoskeleton/botContext.js";
 import {UnionMessageEvent} from "../exoskeleton/middleware.js";
 import {from} from "../exoskeleton/reflections/from.js";
-import {getMeterIdFromRoom} from "../database/room.js";
+import {db} from "../database/db.js";
 
 export class BindController implements TextController {
   match(msg: string): boolean {
@@ -23,7 +22,7 @@ export class BindController implements TextController {
         if (username.length != 13) {
           ctx.retMsg.push(`学号 ${username} 非法`);
         } else {
-          await setUserAccount(e.sender.user_id.toString(), username, password);
+          await db.setUserAccount(e.sender.user_id.toString(), username, password);
           ctx.retMsg.push("绑定学号成功");
         }
       }
@@ -33,7 +32,7 @@ export class BindController implements TextController {
       const room = msg.match(/宿舍\s*(.{1,10}?-\d+)/)?.[1];
       let meterId = msg.match(/meter\s*(.+?\b)/)?.[1];
       if (room != null) {
-        const queryResult = await getMeterIdFromRoom(room);
+        const queryResult = await db.getMeterIdFromRoom(room);
         if (queryResult == null) {
           ctx.retMsg.push(`未能查询到宿舍: ${room} 的信息`);
         } else {
@@ -41,7 +40,7 @@ export class BindController implements TextController {
         }
       }
       if (meterId != null) {
-        await setUserRoom(e.sender.user_id.toString(), meterId);
+        await db.setUserRoom(e.sender.user_id.toString(), meterId);
         ctx.retMsg.push("绑定宿舍成功");
       }
     }

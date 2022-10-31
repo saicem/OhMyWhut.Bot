@@ -1,7 +1,7 @@
 import {BotContext} from "./botContext.js";
-import {getUserAccount, getUserMeter} from "../database/user.js";
 import {DiscussMessageEvent, GroupMessageEvent, PrivateMessageEvent} from "oicq";
 import {AuthenticationTags} from "./reflections/authentication.js";
+import {db} from "../database/db.js";
 
 export type UnionMessageEvent = PrivateMessageEvent | GroupMessageEvent | DiscussMessageEvent
 
@@ -16,7 +16,7 @@ export class AuthenticationMiddleware implements BotMiddleware {
       return ctx;
     }
     if (tag == "basic") {
-      const account = await getUserAccount(e.sender.user_id.toString());
+      const account = await db.getUserAccount(e.sender.user_id.toString());
       if (!account || !account.username || !account.password) {
         ctx.stop = true;
         ctx.retMsg.push("请先私聊机器人进行绑定");
@@ -25,7 +25,7 @@ export class AuthenticationMiddleware implements BotMiddleware {
       ctx.info.set("username", account.username);
       ctx.info.set("password", account.password);
     } else if (tag == "electric") {
-      const account = await getUserMeter(e.sender.user_id.toString());
+      const account = await db.getUserMeter(e.sender.user_id.toString());
       if (!account || !account.username || !account.password) {
         ctx.stop = true;
         ctx.retMsg.push("请先私聊机器人进行绑定");
