@@ -28,3 +28,11 @@ export function cache(ttl: number = 80): MethodDecorator {
     }
   };
 }
+
+export function setDownloadTagCache(ttl: number, downloadTag: string, filename: string) {
+  botCache.set(downloadTag, filename, ttl);
+}
+
+export function getDownloadTagCache(downloadTag: string) {
+  return botCache.get<string>(downloadTag);
+}

@@ -28,4 +28,14 @@ export default {
    * 通过 webapi 发送消息时需要的密钥
    */
   msgSecret: "",
+
+  /**
+   * 开学第一周周一
+   */
+  termStartTimestamp: new Date(2022, 7, 29).getTime(),
+
+  /**
+   *
+   */
+  exposeApiUrl: "http://localhost:3000",
 } as const;

@@ -85,7 +85,7 @@ export class BotApplication {
     }
 
     if (ctx.retMsg.length) {
-      await e.reply(ctx.retMsg.join("\n"), true);
+      await e.reply(ctx.retMsg, true);
     }
   }
 

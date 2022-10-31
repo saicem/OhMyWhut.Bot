@@ -1,5 +1,6 @@
 import config from "../config.js";
 import got from "got";
+import {writeFile} from "fs/promises";
 
 const baseUrl = config.fastFetcherUrl;
 
@@ -68,7 +69,9 @@ export async function fetchCoursePng(username: string, password: string, week: n
     },
   });
   if (response.headers["content-type"] == "image/png") {
-    // todo 存储图片
+    const filename = `${username}-${week}.png`;
+    await writeFile(filename, response.rawBody);
+    return filename;
   }
 }
 
@@ -80,6 +83,8 @@ export async function fetchCourseIcal(username: string, password: string) {
     },
   });
   if (response.headers["content-type"] == "text/calendar; charset=utf-8") {
-    // todo 存储 ical 文件
+    const filename = `${username}.ics`;
+    await writeFile(filename, response.rawBody);
+    return filename;
   }
 }
