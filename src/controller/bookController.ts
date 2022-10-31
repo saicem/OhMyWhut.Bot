@@ -1,8 +1,8 @@
 import {BotControllerBase} from "../exoskeleton/controller.js";
 import {BotContext} from "../exoskeleton/context.js";
-import {fetchBooks} from "../request/fastFetcher.js";
 import {auth, UserInfo} from "../middlewares/authentication.js";
 import {from, UnionMessageEvent} from "../exoskeleton/application.js";
+import {fetcher} from "../request/fastFetcher.js";
 
 export class BookController implements BotControllerBase {
   match(msg: string): boolean {
@@ -13,7 +13,7 @@ export class BookController implements BotControllerBase {
   @from("any")
   async handleAny(ctx: BotContext, e: UnionMessageEvent) {
     const {username, password} = ctx.info.get("auth") as UserInfo;
-    const {books} = await fetchBooks(username, password);
+    const {books} = await fetcher.fetchBooks(username, password);
     ctx.retMsg.push(...[
       `共借阅了 ${books.length} 本书`,
       ...books.map(book => `${book.name}: ${book.borrow.replaceAll("-", "/")}~${book.expire.replaceAll("-", "/")}`),

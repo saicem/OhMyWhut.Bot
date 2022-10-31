@@ -3,10 +3,10 @@ import {BotContext} from "../exoskeleton/context.js";
 import {auth, UserInfo} from "../middlewares/authentication.js";
 import {from, UnionMessageEvent} from "../exoskeleton/application.js";
 import config from "../config.js";
-import {fetchCourseIcal, fetchCoursePng} from "../request/fastFetcher.js";
 import {setDownloadTagCache} from "../cache.js";
 import {v4 as uuidv4} from "uuid";
 import {segment} from "oicq";
+import {fetcher} from "../request/fastFetcher.js";
 
 export class CourseController implements BotControllerBase {
   match(msg: string): boolean {
@@ -30,7 +30,7 @@ export class CourseController implements BotControllerBase {
   }
 
   async handleIcal(ctx: BotContext, username: string, password: string) {
-    const filename = await fetchCourseIcal(username, password);
+    const filename = await fetcher.fetchCourseIcal(username, password);
     if (filename == undefined) {
       ctx.retMsg.push("获取失败");
       return;
@@ -41,7 +41,7 @@ export class CourseController implements BotControllerBase {
   }
 
   async handlePng(ctx: BotContext, username: string, password: string, week: number) {
-    const filename = await fetchCoursePng(username, password, week);
+    const filename = await fetcher.fetchCoursePng(username, password, week);
     if (filename == undefined) {
       ctx.retMsg.push("获取失败");
       return;
