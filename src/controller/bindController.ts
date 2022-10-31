@@ -1,10 +1,9 @@
-import {TextController} from "../exoskeleton/textController.js";
-import {BotContext} from "../exoskeleton/botContext.js";
-import {UnionMessageEvent} from "../exoskeleton/middleware.js";
-import {from} from "../exoskeleton/reflections/from.js";
+import {BotControllerBase} from "../exoskeleton/controller.js";
+import {BotContext} from "../exoskeleton/context.js";
 import {db} from "../database/db.js";
+import {from, UnionMessageEvent} from "../exoskeleton/application.js";
 
-export class BindController implements TextController {
+export class BindController implements BotControllerBase {
   match(msg: string): boolean {
     return msg.startsWith("绑定");
   }

@@ -1,9 +1,8 @@
-import {TextController} from "../exoskeleton/textController.js";
-import {BotContext} from "../exoskeleton/botContext.js";
-import {UnionMessageEvent} from "../exoskeleton/middleware.js";
-import {from} from "../exoskeleton/reflections/from.js";
+import {BotControllerBase} from "../exoskeleton/controller.js";
+import {BotContext} from "../exoskeleton/context.js";
+import {from, UnionMessageEvent} from "../exoskeleton/application.js";
 
-export class HelpController implements TextController {
+export class HelpController implements BotControllerBase {
   match(msg: string): boolean {
     return msg.length < 10 && (msg.startsWith("help") || msg.startsWith("帮助"));
   }

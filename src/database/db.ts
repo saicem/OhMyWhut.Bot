@@ -35,8 +35,8 @@ class DbHandler {
     });
   }
 
-  async getUserAccount(qq: string): Promise<{ username: string, password: string } | null> {
-    let res = await prisma.user.findFirst({
+  async getUserAccount(qq: string) {
+    return await prisma.user.findFirst({
       where: {
         qq: qq,
       },
@@ -45,11 +45,6 @@ class DbHandler {
         password: true,
       },
     });
-
-    if (res != null && (res.username == null || res.password == null)) {
-      res = null;
-    }
-    return res as { username: string, password: string } | null;
   }
 
   async getUserMeter(qq: string) {

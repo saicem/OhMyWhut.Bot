@@ -1,47 +1,23 @@
-import {BotContext} from "./botContext.js";
-import {DiscussMessageEvent, GroupMessageEvent, PrivateMessageEvent} from "oicq";
-import {AuthenticationTags} from "./reflections/authentication.js";
-import {db} from "../database/db.js";
+import {BotContext} from "./context.js";
+import {UnionMessageEvent} from "./application.js";
 
-export type UnionMessageEvent = PrivateMessageEvent | GroupMessageEvent | DiscussMessageEvent
 
-export interface BotMiddleware {
-  tag: string;
-  handle: (ctx: BotContext, e: UnionMessageEvent, tag: any) => Promise<BotContext>;
-}
+export abstract class BotMiddlewareBase {
+  protected nextHandler: BotMiddlewareBase | undefined;
 
-export class AuthenticationMiddleware implements BotMiddleware {
-  async handle(ctx: BotContext, e: UnionMessageEvent, tag: AuthenticationTags | undefined = undefined): Promise<BotContext> {
-    if (!tag) {
-      return ctx;
-    }
-    if (tag == "basic") {
-      const account = await db.getUserAccount(e.sender.user_id.toString());
-      if (!account || !account.username || !account.password) {
-        ctx.stop = true;
-        ctx.retMsg.push("请先私聊机器人进行绑定");
-        return ctx;
-      }
-      ctx.info.set("username", account.username);
-      ctx.info.set("password", account.password);
-    } else if (tag == "electric") {
-      const account = await db.getUserMeter(e.sender.user_id.toString());
-      if (!account || !account.username || !account.password) {
-        ctx.stop = true;
-        ctx.retMsg.push("请先私聊机器人进行绑定");
-        return ctx;
-      }
-      if (!account.meterId) {
-        ctx.stop = true;
-        ctx.retMsg.push("请私聊机器绑定宿舍");
-        return ctx;
-      }
-      ctx.info.set("username", account.username);
-      ctx.info.set("password", account.password);
-      ctx.info.set("meterId", account.meterId);
-    }
-    return ctx;
+  public setNext(next: BotMiddlewareBase) {
+    this.nextHandler = next;
   }
 
-  tag = "authentication";
+  public abstract handle(ctx: BotContext, e: UnionMessageEvent): Promise<void>;
+
+  protected getMetadata(ctx: BotContext, key: string) {
+    return Reflect.getMetadata(key, Object.getPrototypeOf(ctx.controller), ctx.handlerName);
+  }
+
+  protected async callNext(ctx: BotContext, e: UnionMessageEvent) {
+    if (this.nextHandler && !ctx.stop) {
+      await this.nextHandler.handle(ctx, e);
+    }
+  }
 }

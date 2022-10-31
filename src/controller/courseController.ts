@@ -1,16 +1,15 @@
-import {TextController} from "../exoskeleton/textController.js";
-import {BotContext} from "../exoskeleton/botContext.js";
-import {UnionMessageEvent} from "../exoskeleton/middleware.js";
-import {from} from "../exoskeleton/reflections/from.js";
-import {authentication} from "../exoskeleton/reflections/authentication.js";
+import {BotControllerBase} from "../exoskeleton/controller.js";
+import {BotContext} from "../exoskeleton/context.js";
+import {auth} from "../middlewares/authentication.js";
+import {from, UnionMessageEvent} from "../exoskeleton/application.js";
 
-export class CourseController implements TextController {
+export class CourseController implements BotControllerBase {
   match(msg: string): boolean {
     return false;
   }
 
 
-  @authentication("basic")
+  @auth("basic")
   @from("any")
   async handleAny(ctx: BotContext, e: UnionMessageEvent): Promise<void> {
 

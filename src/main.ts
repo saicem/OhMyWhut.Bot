@@ -1,24 +1,24 @@
 import "reflect-metadata";
 import {createClient, Platform} from "oicq";
 import config from "./config.js";
-import {MessageDistributor} from "./exoskeleton/distributor.js";
+import {BotApplication} from "./exoskeleton/application.js";
 import {HelpController} from "./controller/helpController.js";
 import {BindController} from "./controller/bindController.js";
 import {CourseController} from "./controller/courseController.js";
-import {AuthenticationMiddleware} from "./exoskeleton/middleware.js";
 import {BookController} from "./controller/bookController.js";
 import {CardMoneyController} from "./controller/cardMoneyController.js";
 import {ElectricController} from "./controller/electricController.js";
+import {AuthenticationMiddleware} from "./middlewares/authentication.js";
 
-const distributor = new MessageDistributor();
+export const app = new BotApplication();
 {
-  distributor.addMiddleware(new AuthenticationMiddleware());
-  distributor.addController(new HelpController());
-  distributor.addController(new BookController());
-  distributor.addController(new BindController());
-  distributor.addController(new CourseController());
-  distributor.addController(new CardMoneyController());
-  distributor.addController(new ElectricController());
+  app.addMiddleware(new AuthenticationMiddleware());
+  app.addController(new HelpController());
+  app.addController(new BookController());
+  app.addController(new BindController());
+  app.addController(new CourseController());
+  app.addController(new CardMoneyController());
+  app.addController(new ElectricController());
 }
 
 const client = createClient(config.username, {platform: Platform.aPad});
@@ -42,7 +42,7 @@ client.on("system.login.qrcode", function () {
 
 client.on("message", async (e) => {
   try {
-    await distributor.handleTextMessage(e);
+    await app.handleTextMessage(e);
   } catch (e) {
     // todo 记录到错误日志
     console.log(e);
