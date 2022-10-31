@@ -42,6 +42,7 @@ export async function fetchCardMoney(username: string, password: string) {
 interface FetchElectricFeeResponse {
   data: {
     remainPower: string,
+    totalPower: string
     remainFee: string,
   };
 }

@@ -16,6 +16,7 @@ export class ElectricController implements BotControllerBase {
     const {username, password, meterId} = ctx.info.get("auth") as ElectricInfo;
     const res = await fetchElectricFee(username, password, meterId);
     ctx.retMsg.push(`剩余电量: ${res.remainPower}`);
+    ctx.retMsg.push(`总用电量: ${res.totalPower}`);
     ctx.retMsg.push(`剩余电费: ${res.remainFee}`);
   }
 }
