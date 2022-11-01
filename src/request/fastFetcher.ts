@@ -28,6 +28,23 @@ interface FetchElectricFeeResponse {
   };
 }
 
+interface FetchCourseJsonResponse {
+  data: {
+    courses: {
+      name: string,
+      room: string,
+      teacher: string,
+      startWeek: number,
+      endWeek: number,
+      startSection: number,
+      /**
+       * 0-6
+       */
+      endSection: number
+    }[]
+  };
+}
+
 class FastFetcher {
   async fetchBooks(username: string, password: string) {
     const {data} = await got.post(`${baseUrl}/books`, {
@@ -36,7 +53,7 @@ class FastFetcher {
         password: password,
       },
     }).json() as FetchBooksResponse;
-    return data;
+    return data.books;
   }
 
 
@@ -90,6 +107,16 @@ class FastFetcher {
       await writeFile(filename, response.rawBody);
       return filename;
     }
+  }
+
+  async fetchCourseJson(username: string, password: string) {
+    const {data} = await got.post(`${baseUrl}/course/json`, {
+      json: {
+        username: username,
+        password: password,
+      },
+    }).json() as FetchCourseJsonResponse;
+    return data.courses;
   }
 }
 

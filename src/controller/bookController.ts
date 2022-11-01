@@ -13,7 +13,7 @@ export class BookController implements BotControllerBase {
   @from("any")
   async handleAny(ctx: BotContext, e: UnionMessageEvent) {
     const {username, password} = ctx.info.get("auth") as UserInfo;
-    const {books} = await fetcher.fetchBooks(username, password);
+    const books = await fetcher.fetchBooks(username, password);
     ctx.retMsg.push(...[
       `共借阅了 ${books.length} 本书`,
       ...books.map(book => `${book.name}: ${book.borrow.replaceAll("-", "/")}~${book.expire.replaceAll("-", "/")}`),
