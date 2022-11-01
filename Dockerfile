@@ -13,6 +13,9 @@ RUN if [[ -n "${REGISTRY}" ]]; then npm config set registry ${REGISTRY}; fi && \
 
 COPY . .
 
+RUN pnpm exec tsc && pnpm exec prisma generate && \
+    if [[ ! -f prisma/dev.db ]]; then pnpm exec prisma db push; fi
+
 EXPOSE 3000
 
 CMD ["node", "/app/dist/main.js"]
