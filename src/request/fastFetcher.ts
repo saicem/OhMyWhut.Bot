@@ -1,6 +1,6 @@
 import {config} from "../config.js";
 import got from "got";
-import {writeFile} from "fs/promises";
+import {fileHandler} from "../fileHandler.js";
 
 const baseUrl = config.fastFetcherUrl;
 
@@ -81,6 +81,10 @@ class FastFetcher {
   }
 
   async fetchCoursePng(username: string, password: string, week: number = 0) {
+    const filename = `${username}-${week}.png`;
+    if (await fileHandler.hasFile(filename)) {
+      return filename;
+    }
     const response = await got.post(`${baseUrl}/course/png`, {
       json: {
         username: username,
@@ -89,13 +93,16 @@ class FastFetcher {
       },
     });
     if (response.headers["content-type"] == "image/png") {
-      const filename = `${username}-${week}.png`;
-      await writeFile(filename, response.rawBody);
+      await fileHandler.writeFile(filename, response.rawBody);
       return filename;
     }
   }
 
   async fetchCourseIcal(username: string, password: string) {
+    const filename = `${username}.ics`;
+    if (await fileHandler.hasFile(filename)) {
+      return filename;
+    }
     const response = await got.post(`${baseUrl}/course/ical`, {
       json: {
         username: username,
@@ -103,8 +110,7 @@ class FastFetcher {
       },
     });
     if (response.headers["content-type"] == "text/calendar; charset=utf-8") {
-      const filename = `${username}.ics`;
-      await writeFile(filename, response.rawBody);
+      await fileHandler.writeFile(filename, response.rawBody);
       return filename;
     }
   }
