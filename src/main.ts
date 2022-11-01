@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import {createClient, Platform} from "oicq";
-import config from "./config.js";
+import {config} from "./config.js";
 import {BotApplication} from "./exoskeleton/application.js";
 import {HelpController} from "./controller/helpController.js";
 import {BindController} from "./controller/bindController.js";

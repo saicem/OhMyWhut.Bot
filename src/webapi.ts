@@ -1,7 +1,7 @@
 import Koa from "koa";
 import Router from "koa-router";
 import {koaBody} from "koa-body";
-import config from "./config.js";
+import {config} from "./config.js";
 import {Client} from "oicq";
 import * as fs from "fs";
 import {getDownloadTagCache} from "./cache.js";

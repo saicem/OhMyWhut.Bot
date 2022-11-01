@@ -1,4 +1,4 @@
-import config from "../config.js";
+import {config} from "../config.js";
 import got from "got";
 import {writeFile} from "fs/promises";
 

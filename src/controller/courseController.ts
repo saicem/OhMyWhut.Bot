@@ -2,7 +2,7 @@ import {BotControllerBase} from "../exoskeleton/controller.js";
 import {BotContext} from "../exoskeleton/context.js";
 import {auth, UserInfo} from "../middlewares/authentication.js";
 import {from, UnionMessageEvent} from "../exoskeleton/application.js";
-import config from "../config.js";
+import {config} from "../config.js";
 import {setDownloadTagCache} from "../cache.js";
 import {v4 as uuidv4} from "uuid";
 import {segment} from "oicq";

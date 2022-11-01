@@ -1,6 +1,6 @@
 import {BotControllerBase} from "./controller.js";
 import {BotContext} from "./context.js";
-import config from "../config.js";
+import {config} from "../config.js";
 import {DiscussMessageEvent, GroupMessageEvent, PrivateMessageEvent} from "oicq";
 import {BotMiddlewareBase} from "./middleware.js";
 
