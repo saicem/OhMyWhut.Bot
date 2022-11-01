@@ -1,41 +1,65 @@
-export default {
+interface configInterface {
   /**
    * 机器人账号
    */
-  username: 0,
+  username: number,
 
   /**
    * 机器人密码
    */
-  password: "",
+  password: string,
 
   /**
    * 管理员账号,用于通知
    */
-  admin: 0,
+  admin: number,
 
   /**
    * 过滤长度，超过此长度的消息会被忽略
    */
-  filterLength: 80,
+  filterLength: number,
 
   /**
    * 依赖的 api 链接，查看 https://github.com/saicem/OhMyWhut.FastFetcher
    */
-  fastFetcherUrl: "",
+  fastFetcherUrl: string,
 
   /**
    * 通过 webapi 发送消息时需要的密钥
    */
-  msgSecret: "",
+  msgSecret: string,
 
   /**
-   * 开学第一周周一
+   * 开学第一周周一，从环境变量读取时变量名为 termStartDate 格式为 2022-1-1，注意不要为 2022-01-01
    */
-  termStartTimestamp: new Date(2022, 7, 29).getTime(),
+  termStartTimestamp: number
+
 
   /**
-   *
+   * 对外暴露的链接地址
    */
-  exposeApiUrl: "http://localhost:3000",
-} as const;
+  exposeApiUrl: string,
+}
+
+let {
+  username,
+  password,
+  admin,
+  filterLength,
+  fastFetcherUrl,
+  msgSecrete,
+  termStartDate,
+  exposeApiUrl,
+} = process.env;
+
+export const config: configInterface = {
+  username: Number(username),
+  password: password!,
+  admin: Number(admin),
+  filterLength: Number(filterLength),
+  fastFetcherUrl: fastFetcherUrl!,
+  msgSecret: msgSecrete!,
+  termStartTimestamp: Date.parse(termStartDate!),
+  exposeApiUrl: exposeApiUrl!,
+};
+
