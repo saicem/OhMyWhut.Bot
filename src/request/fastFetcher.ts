@@ -83,7 +83,7 @@ class FastFetcher {
   async fetchCoursePng(username: string, password: string, week: number = 0) {
     const filename = `${username}-${week}.png`;
     if (await fileHandler.hasFile(filename)) {
-      return filename;
+      return fileHandler.getFilePath(filename);
     }
     const response = await got.post(`${baseUrl}/course/png`, {
       json: {
@@ -94,14 +94,14 @@ class FastFetcher {
     });
     if (response.headers["content-type"] == "image/png") {
       await fileHandler.writeFile(filename, response.rawBody);
-      return filename;
+      return fileHandler.getFilePath(filename);
     }
   }
 
   async fetchCourseIcal(username: string, password: string) {
     const filename = `${username}.ics`;
     if (await fileHandler.hasFile(filename)) {
-      return filename;
+      return fileHandler.getFilePath(filename);
     }
     const response = await got.post(`${baseUrl}/course/ical`, {
       json: {
@@ -111,7 +111,7 @@ class FastFetcher {
     });
     if (response.headers["content-type"] == "text/calendar; charset=utf-8") {
       await fileHandler.writeFile(filename, response.rawBody);
-      return filename;
+      return fileHandler.getFilePath(filename);
     }
   }
 

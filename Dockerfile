@@ -16,6 +16,8 @@ COPY . .
 RUN pnpm exec tsc && pnpm exec prisma generate && \
     if [[ ! -f prisma/dev.db ]]; then pnpm exec prisma db push; fi
 
+mkdir "cacheFolder"
+
 EXPOSE 3000
 
 CMD ["node", "/app/dist/main.js"]

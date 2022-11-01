@@ -30,22 +30,22 @@ export class CourseController implements BotControllerBase {
   }
 
   async handleIcal(ctx: BotContext, username: string, password: string) {
-    const filename = await fetcher.fetchCourseIcal(username, password);
-    if (filename == undefined) {
+    const filePath = await fetcher.fetchCourseIcal(username, password);
+    if (filePath == undefined) {
       ctx.retMsg.push("获取失败");
       return;
     }
     const id = uuidv4();
-    setDownloadTagCache(300, id, filename);
+    setDownloadTagCache(300, id, filePath);
     ctx.retMsg.push(`下载后导入日历即可，5分钟内有效\n下载链接: ${config.exposeApiUrl}/cal/${id}`);
   }
 
   async handlePng(ctx: BotContext, username: string, password: string, week: number) {
-    const filename = await fetcher.fetchCoursePng(username, password, week);
-    if (filename == undefined) {
+    const filePath = await fetcher.fetchCoursePng(username, password, week);
+    if (filePath == undefined) {
       ctx.retMsg.push("获取失败");
       return;
     }
-    ctx.retMsg.push(segment.image(filename));
+    ctx.retMsg.push(segment.image(filePath));
   }
 }
