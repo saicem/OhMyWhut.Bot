@@ -3,8 +3,7 @@ import Router from "koa-router";
 import {koaBody} from "koa-body";
 import {config} from "./config.js";
 import {Client} from "oicq";
-import * as fs from "fs";
-import {getDownloadTagCache} from "./cache.js";
+import {shareFileJar} from "./cache.js";
 
 export function createKoaApp(client: Client) {
   const app = new Koa();
@@ -49,12 +48,12 @@ export function createKoaApp(client: Client) {
   });
 
   router.get("/cal/:id", async (ctx) => {
-    const filename = getDownloadTagCache(ctx.params.id);
-    if (filename == undefined) {
+    const buf = shareFileJar.get(ctx.params.id);
+    if (buf == undefined) {
       ctx.response.body = "链接已失效";
       return;
     }
-    ctx.response.body = fs.createReadStream(filename);
+    ctx.response.body = buf;
     ctx.response.set("content-disposition", "attachment; filename=courses.ics");
     ctx.response.set("content-type", "text/calendar");
   });

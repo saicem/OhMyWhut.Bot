@@ -38,26 +38,26 @@ export class AuthenticationMiddleware extends BotMiddlewareBase {
   private async handleBasic(ctx: BotContext, e: UnionMessageEvent) {
     const account = await db.getUserAccount(e.sender.user_id.toString());
     if (!account || !account.username || !account.password) {
-      ctx.stop = true;
-      ctx.retMsg.push("请先私聊机器人进行绑定");
+      ctx.context.stop = true;
+      ctx.response.push("请先私聊机器人进行绑定");
       return;
     }
-    ctx.info.set("auth", account);
+    ctx.context.info.set("auth", account);
   }
 
   private async handleElectric(ctx: BotContext, e: UnionMessageEvent) {
     const account = await db.getUserMeter(e.sender.user_id.toString());
     if (!account || !account.username || !account.password) {
-      ctx.stop = true;
-      ctx.retMsg.push("请先私聊机器人进行绑定");
+      ctx.context.stop = true;
+      ctx.response.push("请先私聊机器人进行绑定");
       return;
     }
     if (!account.meterId) {
-      ctx.stop = true;
-      ctx.retMsg.push("请私聊机器绑定宿舍");
+      ctx.context.stop = true;
+      ctx.response.push("请私聊机器绑定宿舍");
       return;
     }
-    ctx.info.set("auth", account);
+    ctx.context.info.set("auth", account);
   }
 
   static authentication(policy: Policies): MethodDecorator {

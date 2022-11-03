@@ -69,23 +69,26 @@ export class BotApplication {
 
     // todo 上方添加过滤器
     const ctx: BotContext = {
-      controller: controller,
-      handlerName: handlerName,
-      info: new Map<string, string>(),
-      retMsg: [],
-      stop: false,
+      request: e,
+      context: {
+        controller: controller,
+        handlerName: handlerName,
+        info: new Map<string, string>(),
+        stop: false,
+      },
+      response: [],
     };
 
     if (this.middlewares) {
       await this.middlewares[0].handle(ctx, e);
     }
 
-    if (!ctx.stop) {
+    if (!ctx.context.stop) {
       await ((controller as any)[handlerName] as BotMsgHandler)(ctx, e);
     }
 
-    if (ctx.retMsg.length) {
-      await e.reply(ctx.retMsg, true);
+    if (ctx.response.length) {
+      await e.reply(ctx.response, true);
     }
   }
 
@@ -95,7 +98,7 @@ export class BotApplication {
 }
 
 export function from(type: "private" | "discuss" | "group" | "any") {
-  return (target: object, propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: BotContext, e: UnionMessageEvent) => Promise<any>>) => {
+  return (target: object, propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: BotContext) => Promise<any>>) => {
     descriptor.value;
     Reflect.defineMetadata(`${appMetadataKey}`, type, target, propertyKey);
   };

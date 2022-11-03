@@ -1,7 +1,7 @@
 import {BotControllerBase} from "../exoskeleton/controller.js";
 import {BotContext} from "../exoskeleton/context.js";
 import {db} from "../database/db.js";
-import {from, UnionMessageEvent} from "../exoskeleton/application.js";
+import {from} from "../exoskeleton/application.js";
 
 export class BindController implements BotControllerBase {
   match(msg: string): boolean {
@@ -9,20 +9,20 @@ export class BindController implements BotControllerBase {
   }
 
   @from("private")
-  async handlePrivate(ctx: BotContext, e: UnionMessageEvent): Promise<void> {
-    const msg = e.raw_message;
+  async handlePrivate(ctx: BotContext): Promise<void> {
+    const msg = ctx.request.raw_message;
 
     if (msg.match(/学号/)) {
       const username = msg.match(/学号\s*(\d+?\b)/)?.[1];
       const password = msg.match(/密码\s*(.+?\b)/)?.[1];
       if (username == undefined || password == undefined) {
-        ctx.retMsg.push("学号或密码缺失");
+        ctx.response.push("学号或密码缺失");
       } else {
         if (username.length != 13) {
-          ctx.retMsg.push(`学号 ${username} 非法`);
+          ctx.response.push(`学号 ${username} 非法`);
         } else {
-          await db.setUserAccount(e.sender.user_id.toString(), username, password);
-          ctx.retMsg.push("绑定学号成功");
+          await db.setUserAccount(ctx.request.sender.user_id.toString(), username, password);
+          ctx.response.push("绑定学号成功");
         }
       }
     }
@@ -33,24 +33,24 @@ export class BindController implements BotControllerBase {
       if (room != null) {
         const queryResult = await db.getMeterIdFromRoom(room);
         if (queryResult == null) {
-          ctx.retMsg.push(`未能查询到宿舍: ${room} 的信息`);
+          ctx.response.push(`未能查询到宿舍: ${room} 的信息`);
         } else {
           meterId = queryResult.meterId;
         }
       }
       if (meterId != null) {
-        await db.setUserRoom(e.sender.user_id.toString(), meterId);
-        ctx.retMsg.push("绑定宿舍成功");
+        await db.setUserRoom(ctx.request.sender.user_id.toString(), meterId);
+        ctx.response.push("绑定宿舍成功");
       }
     }
 
-    if (ctx.retMsg.length == 0) {
-      ctx.retMsg.push("绑定格式: 绑定 [学号 {xxx} 密码 {xxx}] [宿舍 {xxx}|meter {xxx}]");
+    if (ctx.response.length == 0) {
+      ctx.response.push("绑定格式: 绑定 [学号 {xxx} 密码 {xxx}] [宿舍 {xxx}|meter {xxx}]");
     }
   }
 
   @from("any")
-  async handleGroup(ctx: BotContext, e: UnionMessageEvent): Promise<void> {
-    ctx.retMsg.push("请私聊机器人进行绑定");
+  async handleGroup(ctx: BotContext): Promise<void> {
+    ctx.response.push("请私聊机器人进行绑定");
   }
 }

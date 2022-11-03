@@ -11,9 +11,9 @@ export class CardMoneyController implements BotControllerBase {
 
   @auth("basic")
   @from("any")
-  async handleAny(ctx: BotContext, e: UnionMessageEvent) {
-    const {username, password} = ctx.info.get("auth") as UserInfo;
+  async handleAny(ctx: BotContext) {
+    const {username, password} = ctx.context.info.get("auth") as UserInfo;
     const moneyString = await fetcher.fetchCardMoney(username, password);
-    ctx.retMsg.push(`余额: ${moneyString}`);
+    ctx.response.push(`余额: ${moneyString}`);
   }
 }

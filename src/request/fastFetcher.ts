@@ -1,6 +1,5 @@
 import {config} from "../config.js";
 import got from "got";
-import {fileHandler} from "../fileHandler.js";
 
 const baseUrl = config.fastFetcherUrl;
 
@@ -43,6 +42,7 @@ interface FetchCourseJsonResponse {
       endSection: number
     }[]
   };
+  cacheId: string;
 }
 
 class FastFetcher {
@@ -80,49 +80,40 @@ class FastFetcher {
     return data;
   }
 
-  async fetchCoursePng(username: string, password: string, week: number = 0) {
-    const filename = `${username}-${week}.png`;
-    if (await fileHandler.hasFile(filename)) {
-      return fileHandler.getFilePath(filename);
-    }
-    const response = await got.post(`${baseUrl}/course/png`, {
-      json: {
-        username: username,
-        password: password,
-        week: week,
-      },
-    });
-    if (response.headers["content-type"] == "image/png") {
-      await fileHandler.writeFile(filename, response.rawBody);
-      return fileHandler.getFilePath(filename);
-    }
-  }
-
-  async fetchCourseIcal(username: string, password: string) {
-    const filename = `${username}.ics`;
-    if (await fileHandler.hasFile(filename)) {
-      return fileHandler.getFilePath(filename);
-    }
-    const response = await got.post(`${baseUrl}/course/ical`, {
-      json: {
-        username: username,
-        password: password,
-      },
-    });
-    if (response.headers["content-type"] == "text/calendar; charset=utf-8") {
-      await fileHandler.writeFile(filename, response.rawBody);
-      return fileHandler.getFilePath(filename);
-    }
-  }
-
   async fetchCourseJson(username: string, password: string) {
-    const {data} = await got.post(`${baseUrl}/course/json`, {
+    return await got.post(`${baseUrl}/course/json`, {
       json: {
         username: username,
         password: password,
       },
     }).json() as FetchCourseJsonResponse;
-    return data.courses;
+  }
+
+  async fetchCoursePng(cacheId: string, week: number = 0) {
+    const resp = await got.get(`${baseUrl}/course/png/${cacheId}?week=${week}`);
+    if (resp.headers["content-type"] == "image/png") {
+      return resp.rawBody;
+    }
+  }
+
+  async fetchCourseCal(cacheId: string) {
+    const resp = await got.get(`${baseUrl}/course/cal/${cacheId}`);
+    if (resp.headers["content-type"] == "text/calendar; charset=utf-8") {
+      return resp.rawBody;
+    }
+  }
+
+  /**
+   * 依靠截图来获取课表图片
+   * @param cacheId 缓存id
+   * @param week 周次
+   * @param template 模板
+   */
+  async fetchCoursePng2(cacheId: string, week: number, template: string = "basic") {
+    const resp = await got.get(`${config.webshotUrl}/playwright?url=${`${baseUrl}/course/html?cache_id=${cacheId}`}`);
+    if (resp.headers["content-type"] == "text/calendar; charset=utf-8") {
+      return resp.rawBody;
+    }
   }
 }
 

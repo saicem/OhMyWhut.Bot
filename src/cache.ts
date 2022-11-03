@@ -1,8 +1,22 @@
-import NodeCache from "node-cache";
+import LRUCache from "lru-cache";
 
-const botCache = new NodeCache({stdTTL: 80, checkperiod: 120});
+export const shareFileJar = new LRUCache<string, Buffer>({
+  max: 64,
+  ttl: 300 * 1000,
+  ttlAutopurge: true,
+  noDeleteOnStaleGet: true,
+});
 
-function getCacheHandler(ttl: number): ProxyHandler<Function> {
+export const cacheIdJar = new LRUCache<number, string>({
+  max: 128,
+  ttl: 60 * 60 * 48 * 1000,
+  ttlAutopurge: true,
+  updateAgeOnGet: true,
+});
+
+const botCache = new LRUCache({ttl: 80});
+
+function getCacheHandler(): ProxyHandler<Function> {
   return {
     apply(target: Function, thisArg: any, argArray: any[]): any {
       const cacheKey = `target.name:${argArray.join("\n")}`;
@@ -11,7 +25,7 @@ function getCacheHandler(ttl: number): ProxyHandler<Function> {
         return cacheVal;
       }
       const val = target(...argArray);
-      botCache.set(cacheKey, val, ttl);
+      botCache.set(cacheKey, val);
       return val;
     },
   };
@@ -20,19 +34,11 @@ function getCacheHandler(ttl: number): ProxyHandler<Function> {
 export function cache(ttl: number = 80): MethodDecorator {
   return (target: object, key: string | symbol, descriptor: PropertyDescriptor) => {
     if (descriptor.hasOwnProperty("get") && descriptor.get) {
-      descriptor.get = new Proxy(target[key as keyof typeof target], getCacheHandler(ttl)) as () => any;
+      descriptor.get = new Proxy(target[key as keyof typeof target], getCacheHandler()) as () => any;
     } else if (!descriptor.hasOwnProperty("set") && descriptor.value) {
-      descriptor.value = new Proxy(target[key as keyof typeof target], getCacheHandler(ttl));
+      descriptor.value = new Proxy(target[key as keyof typeof target], getCacheHandler());
     } else {
       throw new Error("Can't set cache decorator on a setter");
     }
   };
-}
-
-export function setDownloadTagCache(ttl: number, downloadTag: string, filename: string) {
-  botCache.set(downloadTag, filename, ttl);
-}
-
-export function getDownloadTagCache(downloadTag: string) {
-  return botCache.get<string>(downloadTag);
 }
