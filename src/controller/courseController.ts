@@ -54,11 +54,11 @@ export class CourseController implements BotControllerBase {
   }
 
   async handlePng(ctx: BotContext, cacheId: string, week: number) {
-    const buffer = await fetcher.fetchCoursePng(cacheId, week);
-    if (buffer == undefined) {
+    const buf = await fetcher.fetchCoursePng2(cacheId, week);
+    if (buf == undefined) {
       ctx.response.push("获取失败");
       return;
     }
-    ctx.response.push(segment.image(buffer));
+    ctx.response.push(segment.image(buf));
   }
 }

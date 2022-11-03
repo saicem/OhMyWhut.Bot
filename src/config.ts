@@ -20,11 +20,6 @@ interface configInterface {
   filterLength: number,
 
   /**
-   * 依赖的 api 链接，查看 https://github.com/saicem/OhMyWhut.FastFetcher
-   */
-  fastFetcherUrl: string,
-
-  /**
    * 通过 webapi 发送消息时需要的密钥
    */
   msgSecret: string,
@@ -39,6 +34,16 @@ interface configInterface {
    * 对外暴露的链接地址
    */
   exposeApiUrl: string,
+
+  /**
+   * 依赖的 api 链接，查看 https://github.com/saicem/OhMyWhut.FastFetcher
+   */
+  fastFetcherUrl: string,
+
+  /**
+   * 用于截图的 api
+   */
+  webShotUrl: string;
 }
 
 let {
@@ -50,6 +55,7 @@ let {
   msgSecrete,
   termStartDate,
   exposeApiUrl,
+  webShotUrl,
 } = process.env;
 
 export const config: configInterface = {
@@ -61,5 +67,6 @@ export const config: configInterface = {
   msgSecret: msgSecrete!,
   termStartTimestamp: Date.parse(termStartDate!),
   exposeApiUrl: exposeApiUrl!,
+  webShotUrl: webShotUrl!,
 };
 

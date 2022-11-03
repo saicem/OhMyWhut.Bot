@@ -108,10 +108,19 @@ class FastFetcher {
    * @param cacheId 缓存id
    * @param week 周次
    * @param template 模板
+   * @param width 截图宽度
+   * @param height 截图长度
    */
-  async fetchCoursePng2(cacheId: string, week: number, template: string = "basic") {
-    const resp = await got.get(`${config.webshotUrl}/playwright?url=${`${baseUrl}/course/html?cache_id=${cacheId}`}`);
-    if (resp.headers["content-type"] == "text/calendar; charset=utf-8") {
+  async fetchCoursePng2(cacheId: string, week: number, template: string = "basic", width: number = 980, height: number = 2119) {
+    const resp = await got.get({
+      url: `${config.webShotUrl}/playwright`,
+      searchParams: {
+        url: `${baseUrl}/course/html/${cacheId}?week=${week}`,
+        width: width,
+        height: height,
+      },
+    });
+    if (resp.headers["content-type"] == "image/png") {
       return resp.rawBody;
     }
   }
