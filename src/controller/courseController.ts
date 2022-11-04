@@ -8,13 +8,20 @@ import {segment} from "oicq";
 import {fetcher} from "../request/fastFetcher.js";
 import {cacheIdJar, shareFileJar} from "../cache.js";
 
+async function refreshCacheId(username: string, password: string, userId: number) {
+  const res = await fetcher.fetchCourseJson(username, password);
+  cacheIdJar.set(userId, res.cacheId);
+  return res.cacheId;
+}
+
 async function getCacheId(ctx: BotContext) {
   const {username, password} = ctx.context.info.get("auth") as UserInfo;
+  if (ctx.request.raw_message.match("刷新")) {
+    return refreshCacheId(username, password, ctx.request.sender.user_id);
+  }
   let cacheId = cacheIdJar.get(ctx.request.sender.user_id);
   if (cacheId == undefined) {
-    const res = await fetcher.fetchCourseJson(username, password);
-    cacheIdJar.set(ctx.request.sender.user_id, res.cacheId);
-    cacheId = res.cacheId;
+    return refreshCacheId(username, password, ctx.request.sender.user_id);
   }
   return cacheId;
 }
@@ -27,14 +34,12 @@ export class CourseController implements BotControllerBase {
   @auth("basic")
   @from("any")
   async handleAny(ctx: BotContext): Promise<void> {
-    const param = ctx.request.raw_message.match(/课表\s+(.{1,5})/)?.[1];
-
     const cacheId = await getCacheId(ctx);
-
     if (ctx.request.raw_message.match(/日历/)) {
       await this.handleCal(ctx, cacheId);
     } else {
-      let week = Number(param);
+      const weekMatch = ctx.request.raw_message.match(/课表\s+(\d{1,2})/)?.[1];
+      let week = Number(weekMatch);
       if (isNaN(week)) {
         week = Math.floor((new Date().getTime() - config.termStartTimestamp) / (1000 * 3600 * 24 * 7)) + 1;
       }
