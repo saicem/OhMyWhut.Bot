@@ -5,7 +5,7 @@ import {from} from "../exoskeleton/application.js";
 
 export class BindController implements BotControllerBase {
   match(msg: string): boolean {
-    return msg.startsWith("绑定");
+    return msg.match(/绑定(?!\S)/) != null;
   }
 
   @from("private")

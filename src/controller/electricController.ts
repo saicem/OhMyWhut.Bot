@@ -6,7 +6,7 @@ import {fetcher} from "../request/fastFetcher.js";
 
 export class ElectricController implements BotControllerBase {
   match(msg: string): boolean {
-    return msg.startsWith("电费");
+    return msg.slice(0, 2) == "电费";
   }
 
 

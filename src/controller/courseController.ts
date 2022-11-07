@@ -28,7 +28,7 @@ async function getCacheId(ctx: BotContext) {
 
 export class CourseController implements BotControllerBase {
   match(msg: string): boolean {
-    return msg.startsWith("课表");
+    return msg.match(/^课表(?!\S)/) != null;
   }
 
   @auth("basic")

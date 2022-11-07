@@ -4,7 +4,7 @@ import {from} from "../exoskeleton/application.js";
 
 export class HelpController implements BotControllerBase {
   match(msg: string): boolean {
-    return msg.length < 10 && (msg.startsWith("help") || msg.startsWith("帮助"));
+    return msg.length < 10 && msg.match(/^(help|帮助)(?!\S)/) != null;
   }
 
   @from("any")

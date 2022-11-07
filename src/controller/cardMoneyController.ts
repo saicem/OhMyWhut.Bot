@@ -1,12 +1,12 @@
 import {BotControllerBase} from "../exoskeleton/controller.js";
 import {BotContext} from "../exoskeleton/context.js";
-import {from, UnionMessageEvent} from "../exoskeleton/application.js";
+import {from} from "../exoskeleton/application.js";
 import {auth, UserInfo} from "../middlewares/authentication.js";
 import {fetcher} from "../request/fastFetcher.js";
 
 export class CardMoneyController implements BotControllerBase {
   match(msg: string): boolean {
-    return msg.startsWith("校园卡余额");
+    return msg.slice(0, 5) == "校园卡余额";
   }
 
   @auth("basic")

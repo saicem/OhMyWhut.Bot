@@ -6,7 +6,7 @@ import {fetcher} from "../request/fastFetcher.js";
 
 export class BookController implements BotControllerBase {
   match(msg: string): boolean {
-    return msg.match(/^图书|^[Bb]ook/) != null;
+    return msg.match(/^(图书|[Bb]ook)$/) != null;
   }
 
   @auth("basic")
