@@ -6,7 +6,7 @@ import {fetcher} from "../request/fastFetcher.js";
 
 export class CardMoneyController implements BotControllerBase {
   match(msg: string): boolean {
-    return msg.slice(0, 5) == "校园卡余额";
+    return msg == "校园卡余额";
   }
 
   @auth("basic")
