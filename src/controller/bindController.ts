@@ -15,7 +15,7 @@ export class BindController implements BotControllerBase {
 
     if (msg.match(/学号/)) {
       const username = msg.match(/学号\s*(\d+?\b)/)?.[1];
-      const password = msg.match(/密码\s*(\S+?)/)?.[1];
+      const password = msg.match(/密码\s*(\S+)/)?.[1];
       if (username == undefined || password == undefined) {
         ctx.response.push("学号或密码缺失");
       } else {
