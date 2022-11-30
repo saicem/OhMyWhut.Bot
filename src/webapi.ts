@@ -3,7 +3,14 @@ import Router from "koa-router";
 import {koaBody} from "koa-body";
 import {config} from "./config.js";
 import {Client} from "oicq";
-import {shareFileJar} from "./cache.js";
+import LRUCache from "lru-cache";
+
+export const shareFileJar = new LRUCache<string, Buffer>({
+  max: 64,
+  ttl: 300 * 1000,
+  ttlAutopurge: true,
+  noDeleteOnStaleGet: true,
+});
 
 export function createKoaApp(client: Client) {
   const app = new Koa();

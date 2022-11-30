@@ -1,19 +1,5 @@
 import LRUCache from "lru-cache";
 
-export const shareFileJar = new LRUCache<string, Buffer>({
-  max: 64,
-  ttl: 300 * 1000,
-  ttlAutopurge: true,
-  noDeleteOnStaleGet: true,
-});
-
-export const cacheIdJar = new LRUCache<number, string>({
-  max: 128,
-  ttl: 60 * 60 * 48 * 1000,
-  ttlAutopurge: true,
-  // updateAgeOnGet: true,
-});
-
 const botCache = new LRUCache({ttl: 80});
 
 function getCacheHandler(): ProxyHandler<Function> {

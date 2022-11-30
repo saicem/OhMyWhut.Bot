@@ -2,24 +2,29 @@ import "reflect-metadata";
 import {createClient, Platform} from "oicq";
 import {config} from "./config.js";
 import {BotApplication} from "./exoskeleton/application.js";
-import {HelpController} from "./controller/helpController.js";
-import {BindController} from "./controller/bindController.js";
-import {CourseController} from "./controller/courseController.js";
-import {BookController} from "./controller/bookController.js";
-import {CardMoneyController} from "./controller/cardMoneyController.js";
-import {ElectricController} from "./controller/electricController.js";
-import {AuthenticationMiddleware} from "./middlewares/authentication.js";
+import {HelpController} from "./controllers/helpController.js";
+import {BindController} from "./controllers/bindController.js";
+import {CourseController} from "./controllers/courseController.js";
+import {BookController} from "./controllers/bookController.js";
+import {CardMoneyController} from "./controllers/cardMoneyController.js";
+import {ElectricController} from "./controllers/electricController.js";
 import {createKoaApp} from "./webapi.js";
+import {MessageFilter} from "./middlewares/messageFilter.js";
+import {ControllerMapper} from "./middlewares/controllerMapper.js";
 
 export const app = new BotApplication();
 {
-  app.addMiddleware(new AuthenticationMiddleware());
-  app.addController(new HelpController());
-  app.addController(new BookController());
-  app.addController(new BindController());
-  app.addController(new CourseController());
-  app.addController(new CardMoneyController());
-  app.addController(new ElectricController());
+  app.addMiddleware(new MessageFilter());
+  app.addMiddleware((() => {
+    const mapper = new ControllerMapper();
+    mapper.addController(new HelpController());
+    mapper.addController(new BindController());
+    mapper.addController(new BookController());
+    mapper.addController(new CourseController());
+    mapper.addController(new CardMoneyController());
+    mapper.addController(new ElectricController());
+    return mapper;
+  })());
 }
 
 const client = createClient(config.username, {platform: Platform.aPad});

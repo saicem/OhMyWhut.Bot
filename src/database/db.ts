@@ -1,12 +1,21 @@
 import {PrismaClient} from "@prisma/client";
+import LRUCache from "lru-cache";
 
 const prisma = new PrismaClient();
 
+export type UserPublicInfo = { username: string | null, password: string | null, meterId: string | null } | null
+
+const lruCache = new LRUCache<number, UserPublicInfo>({
+  max: 128,
+  ttl: 48 * 60 * 60 * 1000,
+});
+
 class DbHandler {
-  async setUserAccount(qq: string, username: string, password: string) {
+  async setUserAccount(qq: number, username: string, password: string) {
+    lruCache.delete(qq);
     await prisma.user.upsert({
       create: {
-        qq: qq,
+        qq: qq.toString(),
         username: username,
         password: password,
       },
@@ -15,49 +24,43 @@ class DbHandler {
         password: password,
       },
       where: {
-        qq: qq,
+        qq: qq.toString(),
       },
     });
   }
 
-  async setUserRoom(qq: string, meter: string) {
+  async setUserRoom(qq: number, meter: string) {
+    lruCache.delete(qq);
     await prisma.user.upsert({
       create: {
-        qq: qq,
+        qq: qq.toString(),
         meterId: meter,
       },
       update: {
         meterId: meter,
       },
       where: {
-        qq: qq,
+        qq: qq.toString(),
       },
     });
   }
 
-  async getUserAccount(qq: string) {
-    return await prisma.user.findFirst({
-      where: {
-        qq: qq,
-      },
-      select: {
-        username: true,
-        password: true,
-      },
-    });
-  }
-
-  async getUserMeter(qq: string) {
-    return await prisma.user.findFirst({
-      where: {
-        qq: qq,
-      },
-      select: {
-        username: true,
-        password: true,
-        meterId: true,
-      },
-    });
+  async getUser(qq: number) {
+    let ret = lruCache.get(qq);
+    if (ret == undefined) {
+      ret = await prisma.user.findFirst({
+        where: {
+          qq: qq.toString(),
+        },
+        select: {
+          username: true,
+          password: true,
+          meterId: true,
+        },
+      });
+      lruCache.set(qq, ret);
+    }
+    return ret;
   }
 
   async getMeterIdFromRoom(room: string) {

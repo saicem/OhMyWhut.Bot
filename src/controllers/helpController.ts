@@ -1,16 +1,11 @@
-import {BotControllerBase} from "../exoskeleton/controller.js";
 import {BotContext} from "../exoskeleton/context.js";
-import {from} from "../exoskeleton/application.js";
+import {BotControllerBase} from "../middlewares/controllerMapper.js";
 
 export class HelpController implements BotControllerBase {
-  match(msg: string): boolean {
-    return msg.length < 10 && msg.match(/^(help|帮助)(?!\S)/) != null;
-  }
+  command: string = "帮助";
 
-  @from("any")
-  async handleAny(ctx: BotContext): Promise<void> {
-    const msg = ctx.request.raw_message;
-    if (msg.match(/参数/)) {
+  async handle(ctx: BotContext, params: string[]): Promise<void> {
+    if (params[0] == "参数") {
       ctx.response.push([
         "参数说明:",
         "xxx: 表示需要自己填写的内容",

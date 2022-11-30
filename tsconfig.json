@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "target": "es2017",
     "sourceMap": true,
     "strict": true,
@@ -11,8 +12,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "skipLibCheck": true,
-    "moduleResolution": "NodeNext"
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*.ts"

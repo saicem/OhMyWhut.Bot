@@ -1,16 +1,16 @@
 import "reflect-metadata";
-import {BotControllerBase} from "../exoskeleton/controller.js";
 import {BotContext} from "../exoskeleton/context.js";
 import {db} from "../database/db.js";
-import {from} from "../exoskeleton/application.js";
+import {BotControllerBase} from "../middlewares/controllerMapper.js";
 
 export class BindController implements BotControllerBase {
-  match(msg: string): boolean {
-    return msg.match(/绑定(?!\S)/) != null;
-  }
+  command = "绑定";
 
-  @from("private")
-  async handlePrivate(ctx: BotContext): Promise<void> {
+  async handle(ctx: BotContext, params: string[]): Promise<void> {
+    if (ctx.request.message_type != "private") {
+      ctx.response.push("请私聊机器人进行绑定");
+    }
+
     const msg = ctx.request.raw_message;
 
     if (msg.match(/学号/)) {
@@ -22,7 +22,7 @@ export class BindController implements BotControllerBase {
         if (username.length != 13) {
           ctx.response.push(`学号 ${username} 非法`);
         } else {
-          await db.setUserAccount(ctx.request.sender.user_id.toString(), username, password);
+          await db.setUserAccount(ctx.request.sender.user_id, username, password);
           ctx.response.push("绑定学号成功");
         }
       }
@@ -40,7 +40,7 @@ export class BindController implements BotControllerBase {
         }
       }
       if (meterId != null) {
-        await db.setUserRoom(ctx.request.sender.user_id.toString(), meterId);
+        await db.setUserRoom(ctx.request.sender.user_id, meterId);
         ctx.response.push("绑定宿舍成功");
       }
     }
@@ -48,10 +48,5 @@ export class BindController implements BotControllerBase {
     if (ctx.response.length == 0) {
       ctx.response.push("绑定格式: 绑定 [学号 {xxx} 密码 {xxx}] [宿舍 {xxx}|meter {xxx}]");
     }
-  }
-
-  @from("any")
-  async handleGroup(ctx: BotContext): Promise<void> {
-    ctx.response.push("请私聊机器人进行绑定");
   }
 }

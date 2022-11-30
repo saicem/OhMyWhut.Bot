@@ -89,13 +89,6 @@ class FastFetcher {
     }).json() as FetchCourseJsonResponse;
   }
 
-  async fetchCoursePng(cacheId: string, week: number = 0) {
-    const resp = await got.get(`${baseUrl}/course/png/${cacheId}?week=${week}`);
-    if (resp.headers["content-type"] == "image/png") {
-      return resp.rawBody;
-    }
-  }
-
   async fetchCourseCal(cacheId: string) {
     const resp = await got.get(`${baseUrl}/course/cal/${cacheId}`);
     if (resp.headers["content-type"] == "text/calendar; charset=utf-8") {
@@ -111,7 +104,7 @@ class FastFetcher {
    * @param width 截图宽度
    * @param height 截图长度
    */
-  async fetchCoursePng2(cacheId: string, week: number, template: string = "basic", width: number = 980, height: number = 2119) {
+  async fetchCoursePng(cacheId: string, week: number, template: string = "basic", width: number = 980, height: number = 2119) {
     const resp = await got.get({
       url: `${config.webShotUrl}/playwright`,
       searchParams: {

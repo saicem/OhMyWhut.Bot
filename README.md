@@ -11,4 +11,4 @@
 
 修改 [config.ts](src/config.ts)
 
-在 [controller](src/controller) 文件夹内编写控制器，注入 [main.ts](src/main.ts) 即可
+在 [controller](src/controllers) 文件夹内编写控制器，注入 [main.ts](src/main.ts) 即可
