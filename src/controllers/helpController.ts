@@ -1,5 +1,5 @@
 import {BotContext} from "../exoskeleton/context.js";
-import {BotControllerBase} from "../middlewares/controllerMapper.js";
+import {BotControllerBase, BotMsgHandler} from "../middlewares/controllerMapper.js";
 
 export class HelpController implements BotControllerBase {
   command: string = "帮助";
@@ -18,12 +18,33 @@ export class HelpController implements BotControllerBase {
       ctx.response.push([
         "发送 '帮助 参数' 获取参数相关的帮助",
         "可用指令:",
-        "1. 绑定 [学号 {xxx} 密码 {xxx}] [宿舍 {xxx:东1-101,智2-202}|meter {xxx}]",
-        "2. 课表 [日历|1-20] [刷新]",
-        "3. 图书",
-        "4. 电费",
-        "5. 校园卡余额",
+        ...commands.map((value, index) => (`${index + 1}. ${value}`)),
       ].join("\n"));
     }
   }
 }
+
+const commands: string[] = [];
+
+export function help(usage: string, explain: string) {
+  commands.push(usage);
+
+  function getHelpHandler(): ProxyHandler<Function> {
+    return {
+      apply(target: BotMsgHandler, thisArg: any, argArray: [BotContext, string[]]): any {
+        const [ctx, params] = argArray;
+        if (params[0] == "帮助") {
+          ctx.response.push(`用法: ${usage}\n说明: ${explain}`);
+          return;
+        }
+        return target(...argArray);
+      },
+    };
+  }
+
+  return (target: BotControllerBase, propertyKey: "handle", descriptor: TypedPropertyDescriptor<(ctx: BotContext, params: string[]) => Promise<any>>) => {
+    descriptor.value = new Proxy(target[propertyKey], getHelpHandler()) as () => any;
+  };
+}
+
+

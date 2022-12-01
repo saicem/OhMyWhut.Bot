@@ -7,6 +7,7 @@ import {db} from "../database/db.js";
 import {BotControllerBase} from "../middlewares/controllerMapper.js";
 import LRUCache from "lru-cache";
 import {shareFileJar} from "../webapi.js";
+import {help} from "./helpController.js";
 
 const courseCacheIdJar = new LRUCache<number, string>({
   max: 128,
@@ -24,6 +25,7 @@ async function refreshCacheId(username: string, password: string, qq: number) {
 export class CourseController implements BotControllerBase {
   command: string = "课表";
 
+  @help("课表 [日历|1-20] [刷新]", "查询课表，可以以图片，ics 文件两种形式")
   async handle(ctx: BotContext, params: string[]): Promise<void> {
     const user = await db.getUser(ctx.request.user_id);
     if (user == null || user.username == null || user.password == null) {

@@ -4,14 +4,21 @@ import {BotContext} from "../exoskeleton/context.js";
 export class ControllerMapper extends BotMiddlewareBase {
   controllerJar = new Map<string, BotControllerBase>();
 
-  handle(ctx: BotContext): Promise<void> {
+  async handle(ctx: BotContext): Promise<void> {
     const [entry, ...params] = ctx.request.raw_message.split(/\s+/);
     const ctl = this.controllerJar.get(entry);
     if (ctl == undefined) {
       return Promise.resolve();
     }
 
-    return ctl.handle(ctx, params);
+    await ctl.handle(ctx, params);
+
+    await this.callNext(ctx);
+
+    if (ctx.response.length > 0) {
+      await ctx.request.reply(ctx.response);
+    }
+    return;
   }
 
   addController(controller: BotControllerBase) {
@@ -25,11 +32,8 @@ export interface BotControllerBase {
    */
   command: string;
 
-  /**
-   * 处理
-   * @param ctx
-   * @param params
-   */
-  handle(ctx: BotContext, params: string[]): Promise<void>;
+  handle: BotMsgHandler;
 }
+
+export type BotMsgHandler = (ctx: BotContext, params: string[]) => Promise<void>
 

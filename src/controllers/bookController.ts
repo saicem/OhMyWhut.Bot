@@ -2,10 +2,12 @@ import {BotContext} from "../exoskeleton/context.js";
 import {fetcher} from "../request/fastFetcher.js";
 import {BotControllerBase} from "../middlewares/controllerMapper.js";
 import {db} from "../database/db.js";
+import {help} from "./helpController.js";
 
 export class BookController implements BotControllerBase {
   command = "图书";
 
+  @help("图书", "查询图书借阅信息")
   async handle(ctx: BotContext, params: string[]): Promise<void> {
     const user = await db.getUser(ctx.request.user_id);
     if (user == null || user.username == null || user.password == null) {

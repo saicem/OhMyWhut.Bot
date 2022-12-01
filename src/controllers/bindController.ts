@@ -2,10 +2,12 @@ import "reflect-metadata";
 import {BotContext} from "../exoskeleton/context.js";
 import {db} from "../database/db.js";
 import {BotControllerBase} from "../middlewares/controllerMapper.js";
+import {help} from "./helpController.js";
 
 export class BindController implements BotControllerBase {
   command = "绑定";
 
+  @help("绑定 [学号 {xxx} {xxx}] [宿舍 {xxx}]", "用于绑定信息，方便以后的查询")
   async handle(ctx: BotContext, params: string[]): Promise<void> {
     if (ctx.request.message_type != "private") {
       ctx.response.push("请私聊机器人进行绑定");
