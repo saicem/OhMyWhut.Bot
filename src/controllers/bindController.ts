@@ -11,15 +11,13 @@ export class BindController implements BotControllerBase {
       ctx.response.push("请私聊机器人进行绑定");
     }
 
-    const msg = ctx.request.raw_message;
-
-    if (msg.match(/学号/)) {
-      const username = msg.match(/学号\s*(\d+?\b)/)?.[1];
-      const password = msg.match(/密码\s*(\S+)/)?.[1];
+    if (params[0] == "学号") {
+      const username = params[1];
+      const password = params[2];
       if (username == undefined || password == undefined) {
         ctx.response.push("学号或密码缺失");
       } else {
-        if (username.length != 13) {
+        if (!username.match(/\d{13}/)) {
           ctx.response.push(`学号 ${username} 非法`);
         } else {
           await db.setUserAccount(ctx.request.sender.user_id, username, password);
@@ -28,21 +26,20 @@ export class BindController implements BotControllerBase {
       }
     }
 
-    if (msg.match(/宿舍|meter/)) {
-      const room = msg.match(/宿舍\s*(.{1,10}?-\d+)/)?.[1];
-      let meterId = msg.match(/meter\s*(.+?\b)/)?.[1];
-      if (room != null) {
-        const queryResult = await db.getMeterIdFromRoom(room);
-        if (queryResult == null) {
-          ctx.response.push(`未能查询到宿舍: ${room} 的信息`);
-        } else {
-          meterId = queryResult.meterId;
-        }
+    if (params[0] == "宿舍") {
+      const room = params[1];
+      if (room == undefined) {
+        ctx.response.push("缺少宿舍信息");
+        return;
       }
-      if (meterId != null) {
-        await db.setUserRoom(ctx.request.sender.user_id, meterId);
-        ctx.response.push("绑定宿舍成功");
+      const queryResult = await db.getMeterIdFromRoom(room);
+      if (queryResult == null) {
+        ctx.response.push(`未能查询到宿舍: ${room} 的信息`);
+        return;
       }
+      const meterId = queryResult.meterId;
+      await db.setUserRoom(ctx.request.sender.user_id, meterId);
+      ctx.response.push("绑定宿舍成功");
     }
 
     if (ctx.response.length == 0) {

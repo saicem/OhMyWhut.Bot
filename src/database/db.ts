@@ -3,7 +3,10 @@ import LRUCache from "lru-cache";
 
 const prisma = new PrismaClient();
 
-export type UserPublicInfo = { username: string | null, password: string | null, meterId: string | null } | null
+export type UserPublicInfo =
+  { username: string | null, password: string | null, meterId: string | null }
+  | null
+  | undefined
 
 const lruCache = new LRUCache<number, UserPublicInfo>({
   max: 128,
